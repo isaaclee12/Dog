@@ -1,3 +1,5 @@
+#NOTE: Not finished yet
+
 ## System Requirements
 - Latest LTS version of Node
 - Java 8
