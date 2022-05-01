@@ -13,7 +13,6 @@ public class Main {
                         response.header("Access-Control-Allow-Methods",
                                 "GET, POST");
 
-
                     return "OK";
                 });
 
