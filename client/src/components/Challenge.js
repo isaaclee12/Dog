@@ -44,7 +44,7 @@ export class ItemRow extends React.Component {
 }
 
 // Event handlers
-export function findLowStockItemsHandler() {
+export const findLowStockItemsHandler = () => {
     // call lowStock in Main.java
     console.log("Low Stock");
 }
