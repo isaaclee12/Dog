@@ -5,9 +5,9 @@ import "../styles.css";
 export default function App() {
   return (
     <>
-      <Instructions />
-      <div className="challenge-container">
+      {/*<Instructions />*/}
         <Challenge />
+        <div className="challenge-container">
       </div>
     </>
   );
