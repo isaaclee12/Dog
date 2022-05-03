@@ -53,11 +53,8 @@ function httpGet(url) {
 
 // Event handlers
 export const findLowStockItemsHandler = () => {
-
     // call lowStock in Main.java
     console.log("Low Stock");
-
-    // window.open("http://localhost:4567/low-stock");
 
     // Get the low-stock items
 
@@ -65,18 +62,27 @@ export const findLowStockItemsHandler = () => {
 
     try {
         data = httpGet('http://localhost:4567/low-stock');
-    }
-
-    catch(err) {
+    } catch(err) {
         console.log("failed to parse data");
     }
 
-    console.log(data);
+    // console.log(data);
     data = JSON.parse(data);
-
-    console.log("JSON:", data);
-
+    // console.log("JSON:", data);
     document.getElementById("test").style.visibility = "hidden";
+    // console.log(data.candiesToBuy);
+
+    //init array
+    let toBuyString = "";
+
+    for (let i = 0; i <= data.candiesToBuy.length - 1; i++) {
+        // get all names
+        console.log(data.candiesToBuy[i].name);
+        toBuyString += data.candiesToBuy[i].name + "\n";
+    }
+
+    // Set to html
+    document.getElementById("low-stock").innerHTML = toBuyString;
 }
 
 export const reOrderHandler = () => {
@@ -117,6 +123,7 @@ export default function Challenge() {
       <button onClick={findLowStockItemsHandler}>Get Low-Stock Items</button>
       <button onClick={reOrderHandler}>Determine Re-Order Cost</button>
       <p id="test">test</p>
+      <p id="low-stock">a</p>
     </>
   );
 }

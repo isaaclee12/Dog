@@ -109,7 +109,8 @@ public class Main {
 
             if (currentStock/capacity < .25) {
                 // append json string
-                candiesToBuy.append("{\"").append(JSONindex).append("\":\"").append(candyNameCell.getStringCellValue()).append("\"}");
+//                ").append(JSONindex).append("
+                candiesToBuy.append("{\"name\":\"").append(candyNameCell.getStringCellValue()).append("\"}");
                 // iterate JSON index
                 JSONindex++;
 
