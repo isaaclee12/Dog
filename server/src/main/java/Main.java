@@ -83,12 +83,17 @@ public class Main {
         // ArrayList<String> candiesToBuy = new ArrayList<String>();
         // JSON string:
 
-        StringBuilder candiesToBuy = new StringBuilder("candiesToBuy = [\n");
+        // format: [{0:"data"}, {1:"data"}, {name:data}, {name:data}, {name:data},];
+        StringBuilder candiesToBuy = new StringBuilder("{\"candiesToBuy\":[");
 //        JSONObject candiesToBuy = new JSONObject();
 
         // get 25% or less inv. candies
         // Start at 1 to skip first row
-        for (int i = 1; i <= inventorySheet.getPhysicalNumberOfRows() - 1; i++) {
+        int n = inventorySheet.getPhysicalNumberOfRows() - 1;
+
+        // index for JSON
+        int JSONindex = 0;
+        for (int i = 1; i <= n; i++) {
 
             // DEBUG: System.out.println("Row:" + i);
 
@@ -103,12 +108,20 @@ public class Main {
             float capacity = Float.parseFloat(formatter.formatCellValue(capacityCell));
 
             if (currentStock/capacity < .25) {
-                candiesToBuy.append("{name: \"").append(candyNameCell.getStringCellValue()).append("\"},\n");
+                // append json string
+                candiesToBuy.append("{\"").append(JSONindex).append("\":\"").append(candyNameCell.getStringCellValue()).append("\"}");
+                // iterate JSON index
+                JSONindex++;
+
+                // Add comma if not last row
+                if (i != n) {
+                    candiesToBuy.append(",");
+                }
             }
         }
 
         // Add to end of string
-        candiesToBuy.append("];");
+        candiesToBuy.append("]}");
 
         // DEBUG: It's correct :)
         System.out.println(candiesToBuy);
