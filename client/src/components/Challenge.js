@@ -1,4 +1,5 @@
 import React from "react";
+//import {NodePath as $http} from "@babel/traverse";
 
 
 // Excel
@@ -43,15 +44,45 @@ export class ItemRow extends React.Component {
     }
 }
 
+function httpGet(url) {
+    let xmlHttpReq = new XMLHttpRequest();
+    xmlHttpReq.open("GET", url, false);
+    xmlHttpReq.send(null);
+    return xmlHttpReq.responseText;
+}
+
 // Event handlers
 export const findLowStockItemsHandler = () => {
+
     // call lowStock in Main.java
     console.log("Low Stock");
+
+    // window.open("http://localhost:4567/low-stock");
+
+    // Get the low-stock items
+
+    let data = "";
+
+    try {
+        data = httpGet('http://localhost:4567/low-stock');
+    }
+
+    catch(err) {
+        console.log("failed to parse data");
+    }
+
+    console.log(data);
+    data = JSON.parse(data);
+
+    console.log("JSON:", data);
+
+    document.getElementById("test").style.visibility = "hidden";
 }
 
 export const reOrderHandler = () => {
     // call reOrder in Main.java
     console.log("Reorder");
+    document.getElementById("test").style.visibility = "visible";
 }
 
 
@@ -85,6 +116,7 @@ export default function Challenge() {
       */}
       <button onClick={findLowStockItemsHandler}>Get Low-Stock Items</button>
       <button onClick={reOrderHandler}>Determine Re-Order Cost</button>
+      <p id="test">test</p>
     </>
   );
 }
