@@ -1,47 +1,7 @@
 import React from "react";
-import testData from './test.json'
-//import {NodePath as $http} from "@babel/traverse";
-
-
-// Excel
-export function getExcel() {
-    // TODO: Do stuff witht he java thing
-}
-
 
 // JSON DATA OBJ
 let data = [];
-
-// ItemRow
-export class ItemRow extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            data: [],
-        }
-    }
-
-    render() {
-        const DisplayData=data.map(
-            (info)=>{
-                return(
-                    <tr>
-                        <td>{info.SKU}</td>
-                        <td>{info.name}</td>
-                        <td>{info.stock}</td>
-                        <td>{info.capacity}</td>
-                    </tr>
-                )
-            }
-        )
-
-        return(
-            <tbody>
-            {DisplayData}
-            </tbody>
-        )
-    }
-}
 
 function httpGet(url) {
     let xmlHttpReq = new XMLHttpRequest();
@@ -52,7 +12,8 @@ function httpGet(url) {
 
 // Event handlers
 export const findLowStockItemsHandler = () => {
-    let isVisible = (document.getElementById("table").style.display !== "none");
+    document.getElementById("table").style.display = "inline";
+/*    let isVisible = (document.getElementById("table").style.display !== "none");
 
     console.log(isVisible);
 
@@ -60,7 +21,7 @@ export const findLowStockItemsHandler = () => {
         document.getElementById("table").style.display = "none";
     } else {
         document.getElementById("table").style.display = "inline";
-    }
+    }*/
 }
 
 export const reOrderHandler = () => {
@@ -75,6 +36,7 @@ export default function Challenge() {
     // Get the low-stock items
     let dataString = "";
 
+    // Pre-load data
     try {
         dataString = httpGet('http://localhost:4567/low-stock');
     } catch(err) {
@@ -94,6 +56,11 @@ export default function Challenge() {
                     <td>{info.name}</td>
                     <td>{info.stock}</td>
                     <td>{info.capacity}</td>
+                    <td>
+                        <form>
+                            <input type="text"/>
+                        </form>
+                    </td>
                 </tr>
                 </tbody>
             )
@@ -106,6 +73,7 @@ export default function Challenge() {
       <button onClick={findLowStockItemsHandler}>Get Low-Stock Items</button>
       <button onClick={reOrderHandler}>Determine Re-Order Cost</button>
 
+        <br/>
         <br/>
 
       <table id="table" style={{display: "none"}}>
