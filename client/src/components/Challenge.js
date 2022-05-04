@@ -25,7 +25,7 @@ export class ItemRow extends React.Component {
     }
 
     // Render the row
-    render() {
+    /*render() {
         return (
             <tr>
                 <td>{this.state.SKU}</td>
@@ -33,14 +33,28 @@ export class ItemRow extends React.Component {
                 <td>{this.state.amount}</td>
                 <td>{this.state.capacity}</td>
                 <td>
-                    {/*TODO: Have this input sent to api*/}
+                    {/!*TODO: Have this input sent to api*!/}
                     <form>
                         <input type="text" id="orderAmount" name="orderAmount"/>
                     </form>
                 </td>
-                {/*<td>{this.state.orderAmount}</td>*/}
+                {/!*<td>{this.state.orderAmount}</td>*!/}
             </tr>
         )
+    }*/
+    render(data) {
+        return data.map(
+            (info) => {
+                return (
+                    <tr>
+                        <td>info.SKU</td>
+                        <td>info.name</td>
+                        <td>info.stock</td>
+                        <td>info.capacity</td>
+                    </tr>
+                )
+            }
+        );
     }
 }
 
@@ -74,6 +88,9 @@ export const findLowStockItemsHandler = () => {
 
     //init array
     let toBuyString = "";
+
+    // Pass JSON data to ItemRow to be printed as an HTML table
+    ItemRow.render(data);
 
     /*for (let i = 0; i <= data.candiesToBuy.length - 1; i++) {
         // get all names
