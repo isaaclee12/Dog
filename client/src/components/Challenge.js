@@ -8,6 +8,9 @@ export function getExcel() {
 }
 
 
+// JSON DATA OBJ
+let data = [];
+
 // ItemRow
 export class ItemRow extends React.Component {
     constructor(props) {
@@ -42,19 +45,34 @@ export class ItemRow extends React.Component {
             </tr>
         )
     }*/
-    render(data) {
-        return data.map(
-            (info) => {
-                return (
+    render() {
+        /*return (
+            <tr>
+                <td>{data.SKU}</td>
+                <td>{data.name}</td>
+                <td>{data.stock}</td>
+                <td>{data.capacity}</td>
+            </tr>
+        );*/
+
+        const DisplayData=data.map(
+            (info)=>{
+                return(
                     <tr>
-                        <td>info.SKU</td>
-                        <td>info.name</td>
-                        <td>info.stock</td>
-                        <td>info.capacity</td>
+                        <td>{data.SKU}</td>
+                        <td>{data.name}</td>
+                        <td>{data.stock}</td>
+                        <td>{data.capacity}</td>
                     </tr>
                 )
             }
-        );
+        )
+
+        return(
+            <tbody>
+                {DisplayData}
+            </tbody>
+        )
     }
 }
 
@@ -71,41 +89,21 @@ export const findLowStockItemsHandler = () => {
     console.log("Low Stock");
 
     // Get the low-stock items
-
-    let data = "";
+    let dataString = "";
 
     try {
-        data = httpGet('http://localhost:4567/low-stock');
+        dataString = httpGet('http://localhost:4567/low-stock');
     } catch(err) {
         console.log("failed to parse data");
     }
 
-    // console.log(data);
-    data = JSON.parse(data);
-    // console.log("JSON:", data);
-    document.getElementById("test").style.visibility = "hidden";
-    // console.log(data.candiesToBuy);
-
-    //init array
-    let toBuyString = "";
-
-    // Pass JSON data to ItemRow to be printed as an HTML table
-    ItemRow.render(data);
-
-    /*for (let i = 0; i <= data.candiesToBuy.length - 1; i++) {
-        // get all names
-        console.log(data.candiesToBuy[i].name);
-        toBuyString += data.candiesToBuy[i].name + "\n";
-    }*/
-
-    // Set to html
-    document.getElementById("low-stock").innerHTML = toBuyString;
+    data = JSON.parse(dataString);
+    console.log("JSON:", data);
 }
 
 export const reOrderHandler = () => {
     // call reOrder in Main.java
     console.log("Reorder");
-    document.getElementById("test").style.visibility = "visible";
 }
 
 
@@ -123,14 +121,12 @@ export default function Challenge() {
             <td>Order Amount</td>
           </tr>
         </thead>
-        <tbody>
-            <ItemRow/>
+        <ItemRow/>
           {/* // DO THIS NEXT YO
           TODO: Create an <ItemRow /> component that's rendered for every inventory item. The component
-          will need an input element in the Order Amount column that will take in the order amount and 
+          will need an input element in the Order Amount column that will take in the order amount and
           update the application state appropriately.
           */}
-        </tbody>
       </table>
       {/* TODO: Display total cost returned from the server */}
       <div>Total Cost: </div>
@@ -139,8 +135,6 @@ export default function Challenge() {
       */}
       <button onClick={findLowStockItemsHandler}>Get Low-Stock Items</button>
       <button onClick={reOrderHandler}>Determine Re-Order Cost</button>
-      <p id="test">test</p>
-      <p id="low-stock">a</p>
     </>
   );
 }
