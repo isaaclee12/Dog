@@ -84,7 +84,7 @@ public class Main {
         // JSON string:
 
         // format: [{0:"data"}, {1:"data"}, {name:data}, {name:data}, {name:data},];
-        StringBuilder candiesToBuy = new StringBuilder("{\"candiesToBuy\":[");
+        StringBuilder candiesToBuy = new StringBuilder("[");
 //        JSONObject candiesToBuy = new JSONObject();
 
         // get 25% or less inv. candies
@@ -129,7 +129,7 @@ public class Main {
         }
 
         // Add to end of string
-        candiesToBuy.append("]}");
+        candiesToBuy.append("]");
 
         // DEBUG: It's correct :)
         System.out.println(candiesToBuy);

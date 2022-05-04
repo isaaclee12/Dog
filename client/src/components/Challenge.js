@@ -1,4 +1,5 @@
 import React from "react";
+import testData from './test.json'
 //import {NodePath as $http} from "@babel/traverse";
 
 
@@ -16,53 +17,19 @@ export class ItemRow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            /*their SKU, name, amount in stock, and the capacity
-            in the store for that item*/
-            SKU: "",
-            name: "",
-            amountInStock: "",
-            capacity: "",
-            // Input for order amount
-            orderAmount: "",
-        };
+            data: [],
+        }
     }
 
-    // Render the row
-    /*render() {
-        return (
-            <tr>
-                <td>{this.state.SKU}</td>
-                <td>{this.state.name}</td>
-                <td>{this.state.amount}</td>
-                <td>{this.state.capacity}</td>
-                <td>
-                    {/!*TODO: Have this input sent to api*!/}
-                    <form>
-                        <input type="text" id="orderAmount" name="orderAmount"/>
-                    </form>
-                </td>
-                {/!*<td>{this.state.orderAmount}</td>*!/}
-            </tr>
-        )
-    }*/
     render() {
-        /*return (
-            <tr>
-                <td>{data.SKU}</td>
-                <td>{data.name}</td>
-                <td>{data.stock}</td>
-                <td>{data.capacity}</td>
-            </tr>
-        );*/
-
         const DisplayData=data.map(
             (info)=>{
                 return(
                     <tr>
-                        <td>{data.SKU}</td>
-                        <td>{data.name}</td>
-                        <td>{data.stock}</td>
-                        <td>{data.capacity}</td>
+                        <td>{info.SKU}</td>
+                        <td>{info.name}</td>
+                        <td>{info.stock}</td>
+                        <td>{info.capacity}</td>
                     </tr>
                 )
             }
@@ -70,7 +37,7 @@ export class ItemRow extends React.Component {
 
         return(
             <tbody>
-                {DisplayData}
+            {DisplayData}
             </tbody>
         )
     }
@@ -85,9 +52,26 @@ function httpGet(url) {
 
 // Event handlers
 export const findLowStockItemsHandler = () => {
-    // call lowStock in Main.java
-    console.log("Low Stock");
+    let isVisible = (document.getElementById("table").style.display !== "none");
 
+    console.log(isVisible);
+
+    if (isVisible) {
+        document.getElementById("table").style.display = "none";
+    } else {
+        document.getElementById("table").style.display = "inline";
+    }
+}
+
+export const reOrderHandler = () => {
+    // call reOrder in Main.java
+    console.log("Reorder");
+}
+
+
+// Main function
+export default function Challenge() {
+    // call lowStock in Main.java
     // Get the low-stock items
     let dataString = "";
 
@@ -99,19 +83,32 @@ export const findLowStockItemsHandler = () => {
 
     data = JSON.parse(dataString);
     console.log("JSON:", data);
-}
+    // console.log("JSON:", testData);
 
-export const reOrderHandler = () => {
-    // call reOrder in Main.java
-    console.log("Reorder");
-}
+    const ItemRow=data.map(
+        (info)=>{
+            return(
+                <tbody>
+                <tr>
+                    <td>{info.SKU}</td>
+                    <td>{info.name}</td>
+                    <td>{info.stock}</td>
+                    <td>{info.capacity}</td>
+                </tr>
+                </tbody>
+            )
+        }
+    )
 
-
-// Main function
-export default function Challenge() {
-  return (
+    return (
     <>
-      <table>
+      {/* TODO: Add event handlers to these buttons that use the Java API to perform their relative actions.*/}
+      <button onClick={findLowStockItemsHandler}>Get Low-Stock Items</button>
+      <button onClick={reOrderHandler}>Determine Re-Order Cost</button>
+
+        <br/>
+
+      <table id="table" style={{display: "none"}}>
         <thead>
           <tr>
             <td>SKU</td>
@@ -121,20 +118,14 @@ export default function Challenge() {
             <td>Order Amount</td>
           </tr>
         </thead>
-        <ItemRow/>
-          {/* // DO THIS NEXT YO
-          TODO: Create an <ItemRow /> component that's rendered for every inventory item. The component
+          {ItemRow}
+          {/* TODO: Create an <ItemRow /> component that's rendered for every inventory item. The component
           will need an input element in the Order Amount column that will take in the order amount and
-          update the application state appropriately.
-          */}
+          update the application state appropriately. */}
+          {/*<ItemRow/>*/}
       </table>
       {/* TODO: Display total cost returned from the server */}
       <div>Total Cost: </div>
-      {/* 
-      TODO: Add event handlers to these buttons that use the Java API to perform their relative actions.
-      */}
-      <button onClick={findLowStockItemsHandler}>Get Low-Stock Items</button>
-      <button onClick={reOrderHandler}>Determine Re-Order Cost</button>
     </>
-  );
+    );
 }
