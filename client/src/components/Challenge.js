@@ -75,11 +75,11 @@ export const findLowStockItemsHandler = () => {
     //init array
     let toBuyString = "";
 
-    for (let i = 0; i <= data.candiesToBuy.length - 1; i++) {
+    /*for (let i = 0; i <= data.candiesToBuy.length - 1; i++) {
         // get all names
         console.log(data.candiesToBuy[i].name);
         toBuyString += data.candiesToBuy[i].name + "\n";
-    }
+    }*/
 
     // Set to html
     document.getElementById("low-stock").innerHTML = toBuyString;

@@ -68,13 +68,13 @@ public class Main {
         //This is required to allow the React app to communicate with this API
         before((request, response) -> response.header("Access-Control-Allow-Origin", "http://localhost:3000"));
 
-        // Iterate over sheets in workbook
+/*        // Iterate over sheets in workbook
         Iterator<Sheet> sheetIterator = inventoryWorkbook.sheetIterator();
         System.out.println("Retrieving Sheets using Iterator");
         while (sheetIterator.hasNext()) {
             Sheet sheet = sheetIterator.next();
             System.out.println("=> " + sheet.getSheetName());
-        }
+        }*/
 
         // Get the first sheet
         Sheet inventorySheet = inventoryWorkbook.getSheetAt(0);
@@ -98,6 +98,7 @@ public class Main {
             // DEBUG: System.out.println("Row:" + i);
 
             Row row = inventorySheet.getRow(i);
+            Cell candySKUCell = row.getCell(3);
             Cell candyNameCell = row.getCell(0);
             Cell currentStockCell = row.getCell(1);
             Cell capacityCell = row.getCell(2);
@@ -110,7 +111,13 @@ public class Main {
             if (currentStock/capacity < .25) {
                 // append json string
 //                ").append(JSONindex).append("
-                candiesToBuy.append("{\"name\":\"").append(candyNameCell.getStringCellValue()).append("\"}");
+                // TODO When I get back: append all data other than name, and print an ItemRow in .js for each
+                candiesToBuy
+                        .append("{\"SKU\":\"").append(formatter.formatCellValue(candySKUCell)).append("\",")
+                        .append("\"name\":\"").append(candyNameCell.getStringCellValue()).append("\",")
+                        .append("\"stock\":\"").append(formatter.formatCellValue(currentStockCell)).append("\",")
+                        .append("\"capacity\":\"").append(formatter.formatCellValue(capacityCell)).append("\"}");
+
                 // iterate JSON index
                 JSONindex++;
 
