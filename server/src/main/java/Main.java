@@ -147,10 +147,10 @@ public class Main {
             if (currentStock/capacity < .25) {
                 // append json string
                 candiesToBuy
-                        .append("{\"SKU\":\"").append(formatter.formatCellValue(candySKUCell)).append("\",")
-                        .append("\"name\":\"").append(candyNameCell.getStringCellValue()).append("\",")
-                        .append("\"stock\":\"").append(formatter.formatCellValue(currentStockCell)).append("\",")
-                        .append("\"capacity\":\"").append(formatter.formatCellValue(capacityCell)).append("\"}");
+                        .append("{'SKU':'").append(formatter.formatCellValue(candySKUCell)).append("',")
+                        .append("'name':'").append(candyNameCell.getStringCellValue()).append("',")
+                        .append("'stock':'").append(formatter.formatCellValue(currentStockCell)).append("',")
+                        .append("'capacity':'").append(formatter.formatCellValue(capacityCell)).append("'}");
 
                 // iterate JSON index
                 JSONindex++;
@@ -196,36 +196,33 @@ public class Main {
             // Debug
             System.out.println("Executing restock-cost");
 
-            // Get the data from js
-            String data = request.queryParams("dataToSend");
-            System.out.println("DATA:" + data);
-            System.out.println("REQUEST:" + request.body());
+            // This gets the data sent from js
+            String data = request.body();
 
             // Test data to test if this even works
             String testData =
                         "{" +
-                            "\"0\": {\"SKU\":\"786123\",\"name\":\"Good & Plenty\",\"amountToOrder\":\"0\"}," +
-                            "\"1\": {\"SKU\":\"627791\",\"name\":\"Twix\",\"amountToOrder\":\"0\"}," +
-                            "\"2\": {\"SKU\":\"506709\",\"name\":\"Starburst\",\"amountToOrder\":\"0\"}," +
-                            "\"3\": {\"SKU\":\"601091\",\"name\":\"Butterfinger\",\"amountToOrder\":\"0\"}," +
-                            "\"4\": {\"SKU\":\"520745\",\"name\":\"Sour Patch Kids\",\"amountToOrder\":\"0\"}" +
+                            "'0': {'SKU':'786123','name':'Good & Plenty','amountToOrder':'0'}," +
+                            "'1': {'SKU':'627791','name':'Twix','amountToOrder':'0'}," +
+                            "'2': {'SKU':'506709','name':'Starburst','amountToOrder':'0'}," +
+                            "'3': {'SKU':'601091','name':'Butterfinger','amountToOrder':'0'}," +
+                            "'4': {'SKU':'520745','name':'Sour Patch Kids','amountToOrder':'0'}" +
                         "}";
 
-            String testData2 = "{\"SKU\":\"786123\", \"name\":\"Good & Plenty\", \"amountToOrder\":\"0\"}";
+            String testData2 = "{'SKU':'786123', 'name':'Good & Plenty', 'amountToOrder':'0'}";
 
             // JSONSimple's parser failed to work, we are using Gson instead.
             try {
 
                 // Create a list of all the candies
                 Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-//                Type candyMapType = new TypeToken<Map<String, Candy>>() {}.getType();
-                Type candyMapType = new TypeToken<List<Candy>>() {}.getType();
-//                Map<String, Candy> nameEmployeeMap = g.fromJson(testData, candyMapType);
-                List<Candy> candyList = g.fromJson(testData, candyMapType);
-                System.out.println("MAP: " + candyList);
+                Type candyMapType = new TypeToken<Map<String, Candy>>() {}.getType();
+                Map<String, Candy> nameEmployeeMap = g.fromJson(testData, candyMapType);
+                System.out.println("MAP: " + nameEmployeeMap);
+                System.out.println("MAP NAME TEST: " + nameEmployeeMap.get("name"));
 
                 // old stuff
-//                CandyToRestock candyList = g.fromJson(testData, (Type) CandyToRestock.class);
+                CandyToRestock candyList = g.fromJson(testData, (Type) CandyToRestock.class);
                 System.out.println("TEST: " + candyList);
 
                 // Create a list of all the candies
