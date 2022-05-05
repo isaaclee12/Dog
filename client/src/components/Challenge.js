@@ -31,57 +31,74 @@ export const reOrderHandler = () => {
     // Get order amounts from inputs
     let restockInputs = document.getElementsByClassName("restock-input");
 
-    let restockData = [];
+    // String to be parsed as JSON in Java
+    let restockData = "[";
 
-    // VALIDATE DATA to make sure it's not more than capacity
+    // VALIDATE INPUT DATA
     for (let i = 0; i <= restockInputs.length - 1; i++) {
         let restockValue = restockInputs[i].value;
+
         // If there is a value to restock AND the restock amount exceeds diff. of capacity and stock
         if (restockValue !== null && restockValue > (data[i].capacity - data[i].stock)) {
             console.log("Error: Amount requested would cause stock to exceed capacity.");
-            return (
-                <p>Error: Amount requested would cause stock to exceed capacity.</p>
-            );
+            document.getElementById("error").innerHTML = "Error: Amount requested would cause stock to exceed capacity";
+            return
+        }
+
+        // If there is a negative
+        else if (restockValue < 0) {
+            console.log("Error: Order amounts cannot be negative.");
+            document.getElementById("error").innerHTML = "Error: Order amounts cannot be negative.";
+
+            return
+        }
+
+        // If there is a decimal (i.e. value mod 1 is not 0)
+        else if (restockValue % 1 !== 0) {
+            console.log("Error: Order amounts must be whole numbers.");
+            document.getElementById("error").innerHTML = "Error: Order amounts must be whole numbers.";
+            return
+        }
+
+        // If all good, set error back to blank
+        else {
+            document.getElementById("error").innerHTML = " ";
         }
     }
 
-    for (let i = 0; i <= restockInputs.length - 1; i++) {
+    let n = restockInputs.length - 1;
+    for (let i = 0; i <= n; i++) {
         // console.log("item:", inputs[i].value);
-        restockData[i] = {
-            "SKU": data[i].SKU,
-            "name": data[i].name,
-            "amountToOrder": restockInputs[i].value,
+        let restockAmount = parseInt(restockInputs[i].value);
+
+        console.log(typeof(restockAmount));
+
+        // Catch null, negative values for restock as 0
+        if (isNaN(restockAmount)) {
+            restockAmount = 0;
+        }
+        console.log(restockAmount);
+
+        // Append data to string
+        restockData += "{SKU:" + data[i].SKU + ",name:" + data[i].name + ",amountToOrder:" + restockAmount + "}";
+
+        // Add comma to all but last line
+        if (i !== n) {
+            restockData += ",";
         }
     }
+
+    restockData += "]";
 
     // console.log("data:", data[i].name);
     console.log(restockData);
 
+    // set html
+    document.getElementById("dataToSend").innerHTML = restockData;
 
-
-    // AJAX
-
-    // Creating Our XMLHttpRequest object
-    var xhr = new XMLHttpRequest();
-
-    // Making our connection
-    var url = 'http://localhost:3000/restock-cost';
-    xhr.open("GET", url, true);
-
-    // function execute after request is successful
-    xhr.onreadystatechange = function () {
-        if (this.readyState === 4 && this.status === 200) {
-            console.log(this.responseText);
-        }
-    }
-
-    // Sending our request
-    xhr.send(restockData);
-
-
-
-
-    // TODO: send restockData to Java
+    // Get data back
+    // let returnValue = httpGet('http://localhost:4567/restock-cost');
+    // console.log("Return:", returnValue);
 }
 
 
@@ -148,7 +165,10 @@ export default function Challenge() {
           {/*<ItemRow/>*/}
       </table>
       {/* TODO: Display total cost returned from the server */}
+      <div id="error"> </div>
       <div>Total Cost: </div>
+      {/*Invisible div for java to get data from*/}
+      <div id="dataToSend"> </div>
     </>
     );
 }

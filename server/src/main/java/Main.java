@@ -1,14 +1,18 @@
 import static spark.Spark.*;
 
+import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.log4j.BasicConfigurator;
-import com.fasterxml.jackson.core.*;
-
 
 import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.ParseException;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.*;
 import java.util.*;
@@ -129,6 +133,9 @@ public class Main {
         // NOTE: path = website path, e.g. localhost:4567/low-stock
         get("/low-stock", (request, response) -> {
 
+            // Debug
+            System.out.println("Executing low-stock" + request.body());
+
             // Return the value
             return candiesToBuy.toString();
 
@@ -147,7 +154,20 @@ public class Main {
         // Returns JSON containing the total cost of restocking candy
         post("/restock-cost", (request, response) -> {
 
+            // Debug
+            System.out.println("Executing restock-cost");
 
+            // Get the data from js
+            String data = request.queryParams("dataToSend");
+
+            // Test data to test if this even works
+            String testData = "[{SKU:786123,name:Good & Plenty,amountToOrder:0},{SKU:627791,name:Twix,amountToOrder:0},{SKU:506709,name:Starburst,amountToOrder:0},{SKU:601091,name:Butterfinger,amountToOrder:0},{SKU:520745,name:Sour Patch Kids,amountToOrder:0}]";
+
+
+            try {
+                Gson g = new Gson();
+                JSONObject myJson = g.fromJson(testData);
+            }
 
             // Iterate over sheets in workbook
             Iterator<Sheet> sheetIterator = distributorsWorkbook.sheetIterator();
@@ -157,6 +177,10 @@ public class Main {
                 System.out.println("=> " + sheet.getSheetName());
             }
 
+            System.out.println(data);
+
+            // return something
+            return null;
 
             // Old pseudocode:
             // get following data from input field in html:
@@ -179,7 +203,7 @@ public class Main {
                 // Append string with that data
 
             // return string
-            return null;
+            //return null;
         });
 
     }
