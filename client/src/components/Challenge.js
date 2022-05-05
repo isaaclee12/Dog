@@ -25,14 +25,9 @@ export const findLowStockItemsHandler = () => {
 }
 
 export const reOrderHandler = () => {
-    // call reOrder in Main.java
-    console.log("Reorder");
 
     // Get order amounts from inputs
     let restockInputs = document.getElementsByClassName("restock-input");
-
-    // String to be parsed as JSON in Java
-    let restockData = "[";
 
     // VALIDATE INPUT DATA
     for (let i = 0; i <= restockInputs.length - 1; i++) {
@@ -66,21 +61,27 @@ export const reOrderHandler = () => {
         }
     }
 
+
+    // String to be parsed as JSON in Java
+    // NOTE: Don't include [] brackets b/c parse will fail in java
+    let restockData = "\"data\":\"[";
+
     let n = restockInputs.length - 1;
     for (let i = 0; i <= n; i++) {
         // console.log("item:", inputs[i].value);
         let restockAmount = parseInt(restockInputs[i].value);
 
-        console.log(typeof(restockAmount));
+        // console.log(typeof(restockAmount));
 
         // Catch null, negative values for restock as 0
         if (isNaN(restockAmount)) {
             restockAmount = 0;
         }
-        console.log(restockAmount);
+
+        // console.log(restockAmount);
 
         // Append data to string
-        restockData += "{SKU:" + data[i].SKU + ",name:" + data[i].name + ",amountToOrder:" + restockAmount + "}";
+        restockData += "{\"SKU\":\"" + data[i].SKU + "\",\"name\":\"" + data[i].name + "\",\"amountToOrder\":\"" + restockAmount + "\"}";
 
         // Add comma to all but last line
         if (i !== n) {
@@ -88,13 +89,27 @@ export const reOrderHandler = () => {
         }
     }
 
-    restockData += "]";
+    restockData += "\"]}";
 
     // console.log("data:", data[i].name);
     console.log(restockData);
 
     // set html
     document.getElementById("dataToSend").innerHTML = restockData;
+
+    // this code executes post(restock-cost) in Main.java
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://localhost:4567/restock-cost");
+
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onload = () => console.log(xhr.responseText);
+
+    // send the data
+    xhr.send(restockData);
+
+    console.log("test");
 
     // Get data back
     // let returnValue = httpGet('http://localhost:4567/restock-cost');

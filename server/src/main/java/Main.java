@@ -1,6 +1,7 @@
 import static spark.Spark.*;
 
 import jdk.nashorn.internal.parser.JSONParser;
+import org.apache.avro.data.Json;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -15,7 +16,35 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.*;
+
+class Candy {
+    protected String name;
+    protected int SKU;
+    protected int amountToOrder;
+}
+
+class CandyToRestock {
+    protected List<Candy> candyList; // = new List<Candy>()
+
+    public List<Candy> getCandyList() {
+        return candyList;
+    }
+
+    public void setCandyList(List<Candy> candyList) {
+        this.candyList = candyList;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder returnString = new StringBuilder();
+        for (int i = 0; i <= candyList.size() - 1; i++) {
+            returnString.append(candyList.get(i)).append("\n");
+        }
+        return returnString.toString();
+    }
+}
 
 public class Main {
 
@@ -78,7 +107,7 @@ public class Main {
         Sheet inventorySheet = inventoryWorkbook.getSheetAt(0);
 
         // array
-        // ArrayList<String> candiesToBuy = new ArrayList<String>();
+        // List<String> candiesToBuy = new List<String>();
         // JSON string:
 
         // format: [{0:"data"}, {1:"data"}, {name:data}, {name:data}, {name:data},];
@@ -159,15 +188,35 @@ public class Main {
 
             // Get the data from js
             String data = request.queryParams("dataToSend");
+            System.out.println("DATA:" + data);
 
             // Test data to test if this even works
-            String testData = "[{SKU:786123,name:Good & Plenty,amountToOrder:0},{SKU:627791,name:Twix,amountToOrder:0},{SKU:506709,name:Starburst,amountToOrder:0},{SKU:601091,name:Butterfinger,amountToOrder:0},{SKU:520745,name:Sour Patch Kids,amountToOrder:0}]";
+            String testData = "{" +
+                    "\"data\":[" +
+                            "{\"SKU\":\"786123\",\"name\":\"Good & Plenty\",\"amountToOrder\":\"0\"}," +
+                            "{\"SKU\":\"627791\",\"name\":\"Twix\",\"amountToOrder\":\"0\"}," +
+                            "{\"SKU\":\"506709\",\"name\":\"Starburst\",\"amountToOrder\":\"0\"}," +
+                            "{\"SKU\":\"601091\",\"name\":\"Butterfinger\",\"amountToOrder\":\"0\"}," +
+                            "{\"SKU\":\"520745\",\"name\":\"Sour Patch Kids\",\"amountToOrder\":\"0\"}" +
+                        "]" +
+                    "}";
 
-
+            // JSONSimple's parser failed to work, we are using Gson instead.
             try {
+
+                // Create a list of all the candies
+                // JSONObject candyList = new JSONObject();
+
                 Gson g = new Gson();
-                JSONObject myJson = g.fromJson(testData);
+//                g.setLenient(true);
+                CandyToRestock candyList = g.fromJson(testData, (Type) CandyToRestock.class);
+
+                System.out.println("TEST: " + candyList);
+            } catch (Error e) {
+                System.out.println(e.toString());
             }
+
+
 
             // Iterate over sheets in workbook
             Iterator<Sheet> sheetIterator = distributorsWorkbook.sheetIterator();
