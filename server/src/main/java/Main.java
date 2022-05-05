@@ -1,6 +1,7 @@
 import static spark.Spark.*;
 
 import jdk.nashorn.internal.parser.JSONParser;
+import junit.framework.Assert;
 import org.apache.avro.data.Json;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
@@ -13,6 +14,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.GsonBuilder;
 
 import java.io.*;
@@ -20,12 +23,23 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 class Candy {
+    @Expose
     protected String name;
+
+    @Expose
     protected int SKU;
+
+    @Expose
     protected int amountToOrder;
+
+    @Override
+    public String toString() {
+        return "Candy => [" + this.name + this.SKU + this.amountToOrder + "]";
+    }
 }
 
 class CandyToRestock {
+    @Expose
     protected List<Candy> candyList; // = new List<Candy>()
 
     public List<Candy> getCandyList() {
@@ -38,11 +52,7 @@ class CandyToRestock {
 
     @Override
     public String toString() {
-        StringBuilder returnString = new StringBuilder();
-        for (int i = 0; i <= candyList.size() - 1; i++) {
-            returnString.append(candyList.get(i)).append("\n");
-        }
-        return returnString.toString();
+        return "CandyToRestock [candylist=" + candyList + "]";
     }
 }
 
@@ -189,29 +199,40 @@ public class Main {
             // Get the data from js
             String data = request.queryParams("dataToSend");
             System.out.println("DATA:" + data);
+            System.out.println("REQUEST:" + request.body());
 
             // Test data to test if this even works
-            String testData = "{" +
-                    "\"data\":[" +
-                            "{\"SKU\":\"786123\",\"name\":\"Good & Plenty\",\"amountToOrder\":\"0\"}," +
-                            "{\"SKU\":\"627791\",\"name\":\"Twix\",\"amountToOrder\":\"0\"}," +
-                            "{\"SKU\":\"506709\",\"name\":\"Starburst\",\"amountToOrder\":\"0\"}," +
-                            "{\"SKU\":\"601091\",\"name\":\"Butterfinger\",\"amountToOrder\":\"0\"}," +
-                            "{\"SKU\":\"520745\",\"name\":\"Sour Patch Kids\",\"amountToOrder\":\"0\"}" +
-                        "]" +
-                    "}";
+            String testData =
+                        "{" +
+                            "\"0\": {\"SKU\":\"786123\",\"name\":\"Good & Plenty\",\"amountToOrder\":\"0\"}," +
+                            "\"1\": {\"SKU\":\"627791\",\"name\":\"Twix\",\"amountToOrder\":\"0\"}," +
+                            "\"2\": {\"SKU\":\"506709\",\"name\":\"Starburst\",\"amountToOrder\":\"0\"}," +
+                            "\"3\": {\"SKU\":\"601091\",\"name\":\"Butterfinger\",\"amountToOrder\":\"0\"}," +
+                            "\"4\": {\"SKU\":\"520745\",\"name\":\"Sour Patch Kids\",\"amountToOrder\":\"0\"}" +
+                        "}";
+
+            String testData2 = "{\"SKU\":\"786123\", \"name\":\"Good & Plenty\", \"amountToOrder\":\"0\"}";
 
             // JSONSimple's parser failed to work, we are using Gson instead.
             try {
 
                 // Create a list of all the candies
-                // JSONObject candyList = new JSONObject();
+                Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+//                Type candyMapType = new TypeToken<Map<String, Candy>>() {}.getType();
+                Type candyMapType = new TypeToken<List<Candy>>() {}.getType();
+//                Map<String, Candy> nameEmployeeMap = g.fromJson(testData, candyMapType);
+                List<Candy> candyList = g.fromJson(testData, candyMapType);
+                System.out.println("MAP: " + candyList);
 
-                Gson g = new Gson();
-//                g.setLenient(true);
-                CandyToRestock candyList = g.fromJson(testData, (Type) CandyToRestock.class);
-
+                // old stuff
+//                CandyToRestock candyList = g.fromJson(testData, (Type) CandyToRestock.class);
                 System.out.println("TEST: " + candyList);
+
+                // Create a list of all the candies
+                Gson g2 = new Gson();
+                Candy candy = g.fromJson(testData2, (Type) Candy.class);
+                System.out.println("TEST: " + candy);
+
             } catch (Error e) {
                 System.out.println(e.toString());
             }

@@ -64,7 +64,7 @@ export const reOrderHandler = () => {
 
     // String to be parsed as JSON in Java
     // NOTE: Don't include [] brackets b/c parse will fail in java
-    let restockData = "\"data\":\"[";
+    let restockData = "{";
 
     let n = restockInputs.length - 1;
     for (let i = 0; i <= n; i++) {
@@ -81,7 +81,7 @@ export const reOrderHandler = () => {
         // console.log(restockAmount);
 
         // Append data to string
-        restockData += "{\"SKU\":\"" + data[i].SKU + "\",\"name\":\"" + data[i].name + "\",\"amountToOrder\":\"" + restockAmount + "\"}";
+        restockData += "\"" + i +"\": {\"SKU\":\"" + data[i].SKU + "\",\"name\":\"" + data[i].name + "\",\"amountToOrder\":\"" + restockAmount + "\"}";
 
         // Add comma to all but last line
         if (i !== n) {
@@ -89,7 +89,7 @@ export const reOrderHandler = () => {
         }
     }
 
-    restockData += "\"]}";
+    restockData += "}";
 
     // console.log("data:", data[i].name);
     console.log(restockData);
