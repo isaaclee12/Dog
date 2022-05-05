@@ -24,9 +24,6 @@ import java.util.*;
 
 class Candy {
     @Expose
-    protected String name;
-
-    @Expose
     protected int SKU;
 
     @Expose
@@ -34,7 +31,7 @@ class Candy {
 
     @Override
     public String toString() {
-        return "Candy => [" + this.name + this.SKU + this.amountToOrder + "]";
+        return "Candy => [" + this.SKU + this.amountToOrder + "]";
     }
 }
 
@@ -177,17 +174,6 @@ public class Main {
 
             // Return the value
             return candiesToBuy.toString();
-
-            // Old Pseudocode:
-            // Establish JSON
-            // Get the stock for each candy from Inventory excel
-            // percentStockLeft = current stock/capacity
-            // for each candy type:
-            // if percent < 0.25:
-            // add to JSON
-            // return the JSON
-
-//            return null;
         });
 
         // Returns JSON containing the total cost of restocking candy
@@ -198,18 +184,7 @@ public class Main {
 
             // This gets the data sent from js
             String data = request.body();
-
-            // Test data to test if this even works
-            String testData =
-                        "{" +
-                            "'0': {'SKU':'786123','name':'Good & Plenty','amountToOrder':'0'}," +
-                            "'1': {'SKU':'627791','name':'Twix','amountToOrder':'0'}," +
-                            "'2': {'SKU':'506709','name':'Starburst','amountToOrder':'0'}," +
-                            "'3': {'SKU':'601091','name':'Butterfinger','amountToOrder':'0'}," +
-                            "'4': {'SKU':'520745','name':'Sour Patch Kids','amountToOrder':'0'}" +
-                        "}";
-
-            String testData2 = "{'SKU':'786123', 'name':'Good & Plenty', 'amountToOrder':'0'}";
+            System.out.println(data);
 
             // JSONSimple's parser failed to work, we are using Gson instead.
             try {
@@ -217,24 +192,12 @@ public class Main {
                 // Create a list of all the candies
                 Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
                 Type candyMapType = new TypeToken<Map<String, Candy>>() {}.getType();
-                Map<String, Candy> nameEmployeeMap = g.fromJson(testData, candyMapType);
+                Map<String, Candy> nameEmployeeMap = g.fromJson(data, candyMapType);
                 System.out.println("MAP: " + nameEmployeeMap);
                 System.out.println("MAP NAME TEST: " + nameEmployeeMap.get("name"));
-
-                // old stuff
-                CandyToRestock candyList = g.fromJson(testData, (Type) CandyToRestock.class);
-                System.out.println("TEST: " + candyList);
-
-                // Create a list of all the candies
-                Gson g2 = new Gson();
-                Candy candy = g.fromJson(testData2, (Type) Candy.class);
-                System.out.println("TEST: " + candy);
-
             } catch (Error e) {
                 System.out.println(e.toString());
             }
-
-
 
             // Iterate over sheets in workbook
             Iterator<Sheet> sheetIterator = distributorsWorkbook.sheetIterator();
@@ -244,7 +207,7 @@ public class Main {
                 System.out.println("=> " + sheet.getSheetName());
             }
 
-            System.out.println(data);
+
 
             // return something
             return null;
