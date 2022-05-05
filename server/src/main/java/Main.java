@@ -61,7 +61,14 @@ class Candy {
     protected int SKU;*/
 
     @Expose
+    protected String name;
+
+    @Expose
     protected int amountToOrder;
+
+    public String getName() {
+        return name;
+    }
 
     public int getAmountToOrder() {
         return amountToOrder;
@@ -206,11 +213,13 @@ public class Main {
 
             // Turn candy-map names & respective amounts requested into arraylists for later use
             ArrayList<String> requestedCandyNames = new ArrayList<>(candyListMap.keySet());
-
             ArrayList<Integer> requestedCandyAmounts = new ArrayList<>();
-            for (Candy candy : candyListMap.values()) {
-            requestedCandyAmounts.add(candy.getAmountToOrder());
 
+            // Add values to these array
+            for (Candy candy : candyListMap.values()) {
+                requestedCandyNames.add(candy.getName());
+                requestedCandyAmounts.add(candy.getAmountToOrder());
+            }
 
             // Establish some vars
             String distributorName;
@@ -276,19 +285,16 @@ public class Main {
                     }
                 }
             }
-        }
 
 
+            // For each amount in requested candies:
+            for (int i : requestedCandyAmounts) {
 
-            // return something
-            return null;
-
-            // For each line in array:
+            }
                 // Multiply best prices buy desired amount of each candy, and attach type + distributor
                 // Append string with that data
-
-            // return string
-            //return null;
+            // return something
+            return null;
         });
 
     }
