@@ -147,10 +147,10 @@ public class Main {
             if (currentStock/capacity < .25) {
                 // append json string
                 candiesToBuy
-                        .append("{'SKU':'").append(formatter.formatCellValue(candySKUCell)).append("',")
-                        .append("'name':'").append(candyNameCell.getStringCellValue()).append("',")
-                        .append("'stock':'").append(formatter.formatCellValue(currentStockCell)).append("',")
-                        .append("'capacity':'").append(formatter.formatCellValue(capacityCell)).append("'}");
+                        .append("{\"SKU\":\"").append(formatter.formatCellValue(candySKUCell)).append("\",")
+                        .append("\"name\":\"").append(candyNameCell.getStringCellValue()).append("\",")
+                        .append("\"stock\":\"").append(formatter.formatCellValue(currentStockCell)).append("\",")
+                        .append("\"capacity\":\"").append(formatter.formatCellValue(capacityCell)).append("\"}");
 
                 // iterate JSON index
                 JSONindex++;

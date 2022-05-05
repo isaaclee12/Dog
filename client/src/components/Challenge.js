@@ -81,7 +81,7 @@ export const reOrderHandler = () => {
         // console.log(restockAmount);
 
         // Append data to string
-        restockData += "\"" + i +"\": {\"SKU\":\"" + data[i].SKU + "\",\"name\":\"" + data[i].name + "\",\"amountToOrder\":\"" + restockAmount + "\"}";
+        restockData += "\"" + data[i].name +"\": {\"SKU\":\"" + data[i].SKU + "\",\"amountToOrder\":\"" + restockAmount + "\"}";
 
         // Add comma to all but last line
         if (i !== n) {
