@@ -22,6 +22,40 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
+class DistributorCandyPrice {
+    protected String distributorName;
+    protected String candyName;
+    protected int id;
+    protected float cost;
+
+    public DistributorCandyPrice(String distributorName, String candyName, int id, float cost) {
+        this.distributorName = distributorName;
+        this.candyName = candyName;
+        this.id = id;
+        this.cost = cost;
+    }
+
+    public String getDistributorName() {
+        return distributorName;
+    }
+
+    public String getCandyName() {
+        return candyName;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public float getCost() {
+        return cost;
+    }
+
+    public String toString() {
+        return "Distributor => [" + this.distributorName + "," + this.candyName + "," + this.id + "," + this.cost + "]"; // removed: this.SKU +
+    }
+}
+
 class Candy {
 /*    @Expose
     protected int SKU;*/
@@ -31,10 +65,6 @@ class Candy {
 
     public int getAmountToOrder() {
         return amountToOrder;
-    }
-
-    public void setAmountToOrder(int amountToOrder) {
-        this.amountToOrder = amountToOrder;
     }
 
     @Override
@@ -62,27 +92,6 @@ class CandyToRestock {
 }
 
 public class Main {
-
-    // ApachePOI - Excel reader
-    // TODO: Make this work
-    /*public static void getExcel() throws IOException {
-
-        // Get files
-        POIFSFileSystem inventoryFile = new POIFSFileSystem(new File("server/resources/Inventory.xlsx"));
-        POIFSFileSystem distributorsFile = new POIFSFileSystem(new File("server/resources/Distributors.xlsx"));
-
-        // Create workbook objects from files
-        XSSFWorkbook inventoryWorkbook = new XSSFWorkbook(inventoryFile.getRoot(), true);
-        XSSFWorkbook distributorsWorkbook = new XSSFWorkbook(distributorsFile.getRoot(), true);
-
-        // Close files
-        inventoryFile.close();
-        distributorsFile.close();
-
-        // Return
-//        return (inventoryWorkbook, distributorsWorkbook);
-    }*/
-
     public static void main(String[] args) throws IOException, InvalidFormatException {
 
         // Configure log4j
@@ -100,9 +109,7 @@ public class Main {
                     return "OK";
                 });
 
-        // Get the excel items, let's see if we can do that hear or if it needs to be a
-        // Separate function
-
+        // Get the excel items
         // Get files
         OPCPackage inventoryFile = OPCPackage.open(new File("server/resources/Inventory.xlsx"));
         OPCPackage distributorsFile = OPCPackage.open(new File("server/resources/Distributors.xlsx"));
@@ -121,11 +128,7 @@ public class Main {
         // Get the first sheet
         Sheet inventorySheet = inventoryWorkbook.getSheetAt(0);
 
-        // array
-        // List<String> candiesToBuy = new List<String>();
-        // JSON string:
-
-        // format: [{0:"data"}, {1:"data"}, {name:data}, {name:data}, {name:data},];
+        // Establish jsonString
         StringBuilder candiesToBuy = new StringBuilder("[");
 
         // get 25% or less inv. candies
@@ -195,55 +198,90 @@ public class Main {
             System.out.println(data);
 
             // JSONSimple's parser failed to work, we are using Gson instead.
-            try {
+            // Create a list of all the candies, map them.
+            Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+            Type candyMapType = new TypeToken<Map<String, Candy>>() {}.getType();
+            Map<String, Candy> candyListMap = g.fromJson(data, candyMapType);
+            System.out.println("MAP: " + candyListMap);
 
-                // Create a list of all the candies
-                Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-                Type candyMapType = new TypeToken<Map<String, Candy>>() {}.getType();
-                Map<String, Candy> candyListMap = g.fromJson(data, candyMapType);
-                System.out.println("MAP: " + candyListMap);
+            // Turn candy-map names & respective amounts requested into arraylists for later use
+            ArrayList<String> requestedCandyNames = new ArrayList<>(candyListMap.keySet());
 
-                // Iterate over the map!!!!
-                for (String name: candyListMap.keySet()) {
-                    System.out.println("name test: " + name);
-                }
+            ArrayList<Integer> requestedCandyAmounts = new ArrayList<>();
+            for (Candy candy : candyListMap.values()) {
+            requestedCandyAmounts.add(candy.getAmountToOrder());
 
-                for (Candy candy : candyListMap.values()) {
-                    System.out.println("amountToOrder test: " + candy.getAmountToOrder());
-                }
 
-            } catch (Error e) {
-                System.out.println(e.toString());
-            }
+            // Establish some vars
+            String distributorName;
+            ArrayList<DistributorCandyPrice> bestDistributorPrices = new ArrayList<>();
+            ArrayList<String> listNamesScanned = new ArrayList<>();
 
             // Iterate over sheets in workbook
             Iterator<Sheet> sheetIterator = distributorsWorkbook.sheetIterator();
             System.out.println("Retrieving distributor Sheets using Iterator");
             while (sheetIterator.hasNext()) {
-                Sheet sheet = sheetIterator.next();
-                System.out.println("=> " + sheet.getSheetName());
+
+                // Get the next sheet
+                Sheet currentDistributorSheet = sheetIterator.next();
+
+                //System.out.println("=> " + currentDistributorSheet.getSheetName());
+                // Get name of distributor from sheet name
+                distributorName = currentDistributorSheet.getSheetName();
+
+                // For each line in current sheet after 1st line:
+                for (int i = 1; i <= n; i++) {
+
+                    // Get rows from sheet
+                    Row row = currentDistributorSheet.getRow(i);
+
+                    // Get cells from row
+                    Cell candyNameCell = row.getCell(0);
+                    Cell IDCell = row.getCell(1);
+                    Cell costCell = row.getCell(2);
+
+                    // Establish cell to data auto-formatter
+                    DataFormatter formatter = new DataFormatter();
+
+                    // Get data from cells, formatted
+                    String candyName = formatter.formatCellValue(candyNameCell);
+                    int id = Integer.parseInt(formatter.formatCellValue(IDCell));
+                    float cost = Float.parseFloat(formatter.formatCellValue(costCell));
+
+                    // If in list of requested candy names:
+                    if (requestedCandyNames.contains(candyName)){
+
+                        // Make new data obj
+                        DistributorCandyPrice newData = new DistributorCandyPrice(distributorName, candyName, id, cost);
+
+                        // If not in array already, add it in w/ the data
+                        if (!listNamesScanned.contains(candyName)) {
+                            listNamesScanned.add(candyName);
+
+                            // Add to array
+                            bestDistributorPrices.add(newData);
+                        }
+                        // If already in the array, compare the two's prices
+                        else {
+                            // get match
+                            DistributorCandyPrice target = (DistributorCandyPrice) bestDistributorPrices.stream()
+                                    .filter(DistributorCandyPrice -> candyName.equals(DistributorCandyPrice.getCandyName()));
+
+                            // If the new price is lower, replace it
+                            if (cost < target.getCost()) {
+                                bestDistributorPrices.remove(target);
+                                bestDistributorPrices.add(newData);
+                            }
+                        }
+                    }
+                }
             }
+        }
 
 
 
             // return something
             return null;
-
-            // Old pseudocode:
-            // get following data from input field in html:
-                // get list of candy names
-                // get desired amount of each candy
-
-            // Establish dict of items:
-
-            // For each sheet in workbook:
-                // For each line in sheet after 1st line:
-                    // If in list of requested candy names:
-                        // If not in array already, add it in w/ the data
-                        // If already in the array, compare the two's prices
-                            // If the new price is lower, replace it
-                            // Else, ignore it (no code needed)
-                    // Else, ignore it (no code needed)
 
             // For each line in array:
                 // Multiply best prices buy desired amount of each candy, and attach type + distributor
