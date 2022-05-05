@@ -23,15 +23,23 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 class Candy {
-    @Expose
-    protected int SKU;
+/*    @Expose
+    protected int SKU;*/
 
     @Expose
     protected int amountToOrder;
 
+    public int getAmountToOrder() {
+        return amountToOrder;
+    }
+
+    public void setAmountToOrder(int amountToOrder) {
+        this.amountToOrder = amountToOrder;
+    }
+
     @Override
     public String toString() {
-        return "Candy => [" + this.SKU + this.amountToOrder + "]";
+        return "Candy => [" + this.amountToOrder + "]"; // removed: this.SKU +
     }
 }
 
@@ -197,7 +205,11 @@ public class Main {
 
                 // Iterate over the map!!!!
                 for (String name: candyListMap.keySet()) {
-                    System.out.println("name test:" + name);
+                    System.out.println("name test: " + name);
+                }
+
+                for (Candy candy : candyListMap.values()) {
+                    System.out.println("amountToOrder test: " + candy.getAmountToOrder());
                 }
 
             } catch (Error e) {
