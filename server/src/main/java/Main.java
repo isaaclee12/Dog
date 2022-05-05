@@ -5,6 +5,8 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.log4j.BasicConfigurator;
+import com.fasterxml.jackson.core.*;
+
 
 import org.json.simple.JSONObject;
 
@@ -68,14 +70,6 @@ public class Main {
         //This is required to allow the React app to communicate with this API
         before((request, response) -> response.header("Access-Control-Allow-Origin", "http://localhost:3000"));
 
-/*        // Iterate over sheets in workbook
-        Iterator<Sheet> sheetIterator = inventoryWorkbook.sheetIterator();
-        System.out.println("Retrieving Sheets using Iterator");
-        while (sheetIterator.hasNext()) {
-            Sheet sheet = sheetIterator.next();
-            System.out.println("=> " + sheet.getSheetName());
-        }*/
-
         // Get the first sheet
         Sheet inventorySheet = inventoryWorkbook.getSheetAt(0);
 
@@ -85,7 +79,6 @@ public class Main {
 
         // format: [{0:"data"}, {1:"data"}, {name:data}, {name:data}, {name:data},];
         StringBuilder candiesToBuy = new StringBuilder("[");
-//        JSONObject candiesToBuy = new JSONObject();
 
         // get 25% or less inv. candies
         // Start at 1 to skip first row
@@ -110,8 +103,6 @@ public class Main {
 
             if (currentStock/capacity < .25) {
                 // append json string
-//                ").append(JSONindex).append("
-                // TODO When I get back: append all data other than name, and print an ItemRow in .js for each
                 candiesToBuy
                         .append("{\"SKU\":\"").append(formatter.formatCellValue(candySKUCell)).append("\",")
                         .append("\"name\":\"").append(candyNameCell.getStringCellValue()).append("\",")
@@ -134,21 +125,14 @@ public class Main {
         // DEBUG: It's correct :)
         System.out.println(candiesToBuy);
 
-        /*
-         * Spark Stuff
-         * TODO: Figure this stuff out then erase this comment
-         * */
-
-        //TODO: Return JSON containing the candies for which the stock is less than 25% of it's capacity
+        // Returns JSON containing the candies for which the stock is less than 25% of it's capacity
         // NOTE: path = website path, e.g. localhost:4567/low-stock
         get("/low-stock", (request, response) -> {
-
-            // Convert to JSON
-//            JSONObject candiesJSON = new JSONObject(candiesToBuy.toString());
 
             // Return the value
             return candiesToBuy.toString();
 
+            // Old Pseudocode:
             // Establish JSON
             // Get the stock for each candy from Inventory excel
             // percentStockLeft = current stock/capacity
@@ -160,13 +144,41 @@ public class Main {
 //            return null;
         });
 
-        //TODO: Return JSON containing the total cost of restocking candy
+        // Returns JSON containing the total cost of restocking candy
         post("/restock-cost", (request, response) -> {
-            // for each candy type:
-            // Calculate difference between capacity and current stock
-            // BEFORE HAND have an excel with the best prices
-            // Using a list of the best prices, map stockToBuy to candy type to price
-            // Return: Sum all products of stockToBuy * bestPriceForThatCandy
+
+
+
+            // Iterate over sheets in workbook
+            Iterator<Sheet> sheetIterator = distributorsWorkbook.sheetIterator();
+            System.out.println("Retrieving distributor Sheets using Iterator");
+            while (sheetIterator.hasNext()) {
+                Sheet sheet = sheetIterator.next();
+                System.out.println("=> " + sheet.getSheetName());
+            }
+
+
+            // Old pseudocode:
+            // get following data from input field in html:
+                // get list of candy names
+                // get desired amount of each candy
+
+            // Establish dict of items:
+
+            // For each sheet in workbook:
+                // For each line in sheet after 1st line:
+                    // If in list of requested candy names:
+                        // If not in array already, add it in w/ the data
+                        // If already in the array, compare the two's prices
+                            // If the new price is lower, replace it
+                            // Else, ignore it (no code needed)
+                    // Else, ignore it (no code needed)
+
+            // For each line in array:
+                // Multiply best prices buy desired amount of each candy, and attach type + distributor
+                // Append string with that data
+
+            // return string
             return null;
         });
 

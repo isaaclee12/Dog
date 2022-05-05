@@ -27,6 +27,61 @@ export const findLowStockItemsHandler = () => {
 export const reOrderHandler = () => {
     // call reOrder in Main.java
     console.log("Reorder");
+
+    // Get order amounts from inputs
+    let restockInputs = document.getElementsByClassName("restock-input");
+
+    let restockData = [];
+
+    // VALIDATE DATA to make sure it's not more than capacity
+    for (let i = 0; i <= restockInputs.length - 1; i++) {
+        let restockValue = restockInputs[i].value;
+        // If there is a value to restock AND the restock amount exceeds diff. of capacity and stock
+        if (restockValue !== null && restockValue > (data[i].capacity - data[i].stock)) {
+            console.log("Error: Amount requested would cause stock to exceed capacity.");
+            return (
+                <p>Error: Amount requested would cause stock to exceed capacity.</p>
+            );
+        }
+    }
+
+    for (let i = 0; i <= restockInputs.length - 1; i++) {
+        // console.log("item:", inputs[i].value);
+        restockData[i] = {
+            "SKU": data[i].SKU,
+            "name": data[i].name,
+            "amountToOrder": restockInputs[i].value,
+        }
+    }
+
+    // console.log("data:", data[i].name);
+    console.log(restockData);
+
+
+
+    // AJAX
+
+    // Creating Our XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+
+    // Making our connection
+    var url = 'http://localhost:3000/restock-cost';
+    xhr.open("GET", url, true);
+
+    // function execute after request is successful
+    xhr.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            console.log(this.responseText);
+        }
+    }
+
+    // Sending our request
+    xhr.send(restockData);
+
+
+
+
+    // TODO: send restockData to Java
 }
 
 
@@ -58,7 +113,7 @@ export default function Challenge() {
                     <td>{info.capacity}</td>
                     <td>
                         <form>
-                            <input type="text"/>
+                            <input type="text" class="restock-input"/>
                         </form>
                     </td>
                 </tr>
