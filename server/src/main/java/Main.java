@@ -192,9 +192,14 @@ public class Main {
                 // Create a list of all the candies
                 Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
                 Type candyMapType = new TypeToken<Map<String, Candy>>() {}.getType();
-                Map<String, Candy> nameEmployeeMap = g.fromJson(data, candyMapType);
-                System.out.println("MAP: " + nameEmployeeMap);
-                System.out.println("MAP NAME TEST: " + nameEmployeeMap.get("name"));
+                Map<String, Candy> candyListMap = g.fromJson(data, candyMapType);
+                System.out.println("MAP: " + candyListMap);
+
+                // Iterate over the map!!!!
+                for (String name: candyListMap.keySet()) {
+                    System.out.println("name test:" + name);
+                }
+
             } catch (Error e) {
                 System.out.println(e.toString());
             }
