@@ -110,7 +110,10 @@ public class Main {
                     return "OK";
                 });
 
-        // Get the excel items
+
+        /*
+        * Pre-load data from excel
+        * */
         // Get files
         OPCPackage inventoryFile = OPCPackage.open(new File("server/resources/Inventory.xlsx"));
         OPCPackage distributorsFile = OPCPackage.open(new File("server/resources/Distributors.xlsx"));
@@ -175,8 +178,12 @@ public class Main {
         candiesToBuy.append("]");
 
         // DEBUG: It's correct :)
-        System.out.println(candiesToBuy);
+        System.out.println("Low Stock Cost Candies, pre-loaded:" + candiesToBuy);
 
+
+        /*
+        * Get low stock items
+        * */
         // Returns JSON containing the candies for which the stock is less than 25% of it's capacity
         // NOTE: path = website path, e.g. localhost:4567/low-stock
         get("/low-stock", (request, response) -> {
@@ -188,7 +195,11 @@ public class Main {
             return candiesToBuy.toString();
         });
 
-        // Returns JSON containing the total cost of restocking candy
+
+        /*
+        * Determines best cost for candy requested
+        * */
+        // Returns int containing the total cost of restocking candy
         post("/restock-cost", (request, response) -> {
 
             // Debug
@@ -196,66 +207,39 @@ public class Main {
 
             // This gets the data sent from js
             String data = request.body();
-            System.out.println(data);
 
             // JSONSimple's parser failed to work, we are using Gson instead.
             // Create a list of all the candies, map them.
             Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
             Type candyMapType = new TypeToken<Map<String, Candy>>() {}.getType();
             Map<String, Candy> candyListMap = g.fromJson(data, candyMapType);
-            System.out.println("MAP: " + candyListMap);
 
             // Turn candy-map names & respective amounts requested into arraylists for later use
             ArrayList<String> requestedCandyNames = new ArrayList<>(candyListMap.keySet());
-
-            //DEBUG
-            /*for (String name: requestedCandyNames) {
-                System.out.println("name test: " + name);
-            }
-
-            for (Candy candy : candyListMap.values()) {
-                System.out.println("amountToOrder test: " + candy.getAmountToOrder());
-            }*/
-
 
             // Establish some vars
             String distributorName;
             ArrayList<DistributorCandyPrice> bestDistributorPrices = new ArrayList<>();
             ArrayList<String> listNamesScanned = new ArrayList<>();
 
-            // Get all sheets from workbook
-            ArrayList<Sheet> distributorsSheets = new ArrayList<>();
-
             // Iterate over sheets in workbook
             Iterator<Sheet> sheetIterator = distributorsWorkbook.sheetIterator();
-//            System.out.println("Iterating over sheets");
             while (sheetIterator.hasNext()) {
 
                 // Get the next sheet
                 Sheet currentSheet = sheetIterator.next();
 
-                // Get name of distributor from sheet name
-                distributorsSheets.add(currentSheet);
-
                 // get distributor name
                 distributorName = currentSheet.getSheetName();
-                System.out.println("=> " + distributorName);
-
-                // test
-//                System.out.println("last:" + currentSheet.getLastRowNum());
 
                 // get num rows
                 int rows = currentSheet.getPhysicalNumberOfRows() - 1;
-//                System.out.println("rows by poi:" + rows);
 
                 // For each line in current sheet after 1st line:
                 for (int i = 1; i <= rows; i++) {
 
-                    // TODO WHEN RETURN: Fix null pointer exception that happens here
-
                     // Get rows from sheet
                     Row row = currentSheet.getRow(i);
-//                    System.out.println(row.toString());
 
                     // Get cells from row
                     Cell candyNameCell = row.getCell(0);
@@ -288,18 +272,10 @@ public class Main {
                         }
                         // If already in the array, compare the two's prices
                         else {
-                            // get match
-                            // Debug
-//                            System.out.println("Item in array");
-//                            System.out.println(newData);
 
                             // If array bestDistributorPrices has a DistributorCandyPrice with the same name as the current DistributorCandyPrice newData object
                             for (DistributorCandyPrice candyPrice : bestDistributorPrices) {
                                 if (candyPrice.getCandyName().equals(newData.getCandyName())) {
-
-                                    // COMPARE DEBUG
-//                                    System.out.println("\nOLD:" + candyPrice);
-//                                    System.out.println("NEW:" + newData);
 
                                     // If the new price is lower, replace it
                                     if (newData.cost < candyPrice.getCost()) {
@@ -309,16 +285,10 @@ public class Main {
                                     break;
                                 }
                             }
-/*                            DistributorCandyPrice target = (DistributorCandyPrice) bestDistributorPrices.stream()
-                                    .filter(DistributorCandyPrice -> candyName.equals(DistributorCandyPrice.getCandyName()));*/
-
-
                         }
                     }
                 }
             }
-
-            System.out.println("\nFINAL PRICES:");
 
             // sum for prices
             float sum = 0;
@@ -335,13 +305,14 @@ public class Main {
                     }
                 }
 
-
                 //candyListMap
                 sum += candyPrice.cost * amountReq;
             }
 
-            System.out.println(sum);
+            // Print for debug help
+            System.out.println("Final Cost: " + sum);
 
+            // return it.
             return sum;
         });
 
