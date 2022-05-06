@@ -208,44 +208,6 @@ public class Main {
             // Turn candy-map names & respective amounts requested into arraylists for later use
             ArrayList<String> requestedCandyNames = new ArrayList<>(candyListMap.keySet());
 
-            // Create dict of name to amount ordered
-            Dictionary<String, Integer> orderDict = new Dictionary<String, Integer>() {
-                @Override
-                public int size() {
-                    return 0;
-                }
-
-                @Override
-                public boolean isEmpty() {
-                    return false;
-                }
-
-                @Override
-                public Enumeration<String> keys() {
-                    return null;
-                }
-
-                @Override
-                public Enumeration<Integer> elements() {
-                    return null;
-                }
-
-                @Override
-                public Integer get(Object key) {
-                    return null;
-                }
-
-                @Override
-                public Integer put(String key, Integer value) {
-                    return null;
-                }
-
-                @Override
-                public Integer remove(Object key) {
-                    return null;
-                }
-            };
-
             //DEBUG
             /*for (String name: requestedCandyNames) {
                 System.out.println("name test: " + name);
@@ -363,8 +325,16 @@ public class Main {
 
             // Get prices
             for (DistributorCandyPrice candyPrice : bestDistributorPrices) {
+                int amountReq = 0;
+
                 // Get amount ordered respective to the candy's name
-                int amountReq = orderDict.get(candyPrice.getCandyName());
+                for (Map.Entry<String, Candy> pair : candyListMap.entrySet()) {
+                    if (pair.getKey().equals(candyPrice.getCandyName())) { // key = name here
+                        amountReq = pair.getValue().getAmountToOrder(); // Get amount to order from data
+                        break; // Once we got it, we exit the loop
+                    }
+                }
+
 
                 //candyListMap
                 float product = candyPrice.cost * amountReq;

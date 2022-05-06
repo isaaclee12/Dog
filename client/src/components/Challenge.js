@@ -81,7 +81,7 @@ export const reOrderHandler = () => {
         // console.log(restockAmount);
 
         // Append data to string
-        restockData += "\"" + data[i].name + "\":{\"name\":\"" + data[i].name + "\"},{\"amountToOrder\":\"" + restockAmount + "\"}"; // removed "\": {\"SKU\":\"" + data[i].SKU +
+        restockData += "\"" + data[i].name + "\":{\"amountToOrder\":\"" + restockAmount + "\"}"; // removed "\": {\"SKU\":\"" + data[i].SKU +
 
         // Add comma to all but last line
         if (i !== n) {
@@ -107,13 +107,17 @@ export const reOrderHandler = () => {
     xhr.onload = () => console.log(xhr.responseText);
 
     // send the data
-    xhr.send(restockData);
+     xhr.send(restockData);
 
     console.log("test");
 
     // Get data back
-    // let returnValue = httpGet('http://localhost:4567/restock-cost');
-    // console.log("Return:", returnValue);
+    // let restockCost = httpGet('http://localhost:4567/restock-cost');
+    let restockCost = xhr.responseText;
+    console.log("Return:", restockCost);
+
+    // Set HTML.
+    document.getElementById("restockCost").innerHTML = restockCost;
 }
 
 
@@ -184,6 +188,8 @@ export default function Challenge() {
       <div>Total Cost: </div>
       {/*Invisible div for java to get data from*/}
       <div id="dataToSend"> </div>
+      {/*Same thing but for restock*/}
+      <div id="restockCost"> </div>
     </>
     );
 }
