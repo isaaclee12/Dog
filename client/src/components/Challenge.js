@@ -104,21 +104,13 @@ export const reOrderHandler = () => {
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
 
-    xhr.onload = () => console.log(xhr.responseText);
+    let restockCost = 0;
 
     // send the data
     xhr.send(restockData);
 
-    console.log("test");
-
-    // Get data back
-    // let restockCost = httpGet('http://localhost:4567/restock-cost');
-    let restockCost = xhr.responseText;
-    console.log("Return:", Number(restockCost).toFixed(2));
-    let costString = "" + Number(restockCost).toFixed(2);
-
-    // Set HTML
-    document.getElementById("restockCost").innerHTML = "$" + costString;
+    // xhr.onload = () => console.log(xhr.responseText);
+    xhr.onload = () => document.getElementById("restockCost").innerHTML = "$" + Number(xhr.responseText).toFixed(2);
 }
 
 
