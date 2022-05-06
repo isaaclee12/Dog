@@ -241,25 +241,54 @@ public class Main {
                 // Get the next sheet
                 Sheet currentSheet = sheetIterator.next();
 
-                System.out.println("=> " + currentSheet.getSheetName());
                 // Get name of distributor from sheet name
-                distributorName = currentSheet.getSheetName();
+                distributorsSheets.add(currentSheet);
+            }
 
-                // Get num rows properly, do it this way to prevent null exception
-                int rows = 0;
-                if(currentSheet.getPhysicalNumberOfRows()>0) {
-                    rows = currentSheet.getLastRowNum() - currentSheet.getFirstRowNum()+1;
+
+            for (Sheet sheet : distributorsSheets) {
+                // get distributor name
+                distributorName = sheet.getSheetName();
+                System.out.println("=> " + distributorName);
+
+                // test
+                System.out.println("last:" + sheet.getLastRowNum());
+
+                // get num rows
+                int rows = sheet.getPhysicalNumberOfRows() - 1;
+                System.out.println("rows by poi:" + rows);
+
+                // Row counter
+                int rowCount = 0;
+                int i = 0;
+                for (Row row : sheet) {
+                    boolean rowHasContent = true;
+                    for (Cell cell : row) {
+                        if (cell == null) {
+                            rowHasContent = false;
+                            break;
+                        }
+                    }
+
+                    i++;
+
+                    if (rowHasContent && distributorName.equals("Candy Corp")) {
+                        rowCount++;
+                        System.out.println("Row Count:" + rowCount + ", Row in XL:" + i);
+                        System.out.println("Cell:" + row.getCell(0));
+                    }
                 }
-//                int sheetLen = currentSheet.getPhysicalNumberOfRows() - 1;
-                System.out.println("len:" + rows);
-                // For each line in current sheet after 1st line:
+            }
+
+// BEGIN COMMENT
+/*                // For each line in current sheet after 1st line:
                 for (int i = 1; i <= rows; i++) {
 
                     // TODO WHEN RETURN: Fix null pointer exception that happens here
 
                     // Get rows from sheet
-                    Row row = currentSheet.getRow(i);
-                    System.out.println(row);
+                    Row row = sheet.getRow(i);
+                    System.out.println(row.toString());
 
                     // Get cells from row
                     Cell candyNameCell = row.getCell(0);
@@ -308,6 +337,9 @@ public class Main {
             for (int i : requestedCandyAmounts) {
                 System.out.print(i);
             }
+            */
+            // END COMMENT
+
                 // Multiply best prices buy desired amount of each candy, and attach type + distributor
                 // Append string with that data
             // return something
