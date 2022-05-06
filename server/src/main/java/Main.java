@@ -207,13 +207,44 @@ public class Main {
 
             // Turn candy-map names & respective amounts requested into arraylists for later use
             ArrayList<String> requestedCandyNames = new ArrayList<>(candyListMap.keySet());
-            ArrayList<Integer> requestedCandyAmounts = new ArrayList<>();
 
-            // Add values to these array
-            for (Candy candy : candyListMap.values()) {
-                requestedCandyAmounts.add(candy.getAmountToOrder());
-            }
+            // Create dict of name to amount ordered
+            Dictionary<String, Integer> orderDict = new Dictionary<String, Integer>() {
+                @Override
+                public int size() {
+                    return 0;
+                }
 
+                @Override
+                public boolean isEmpty() {
+                    return false;
+                }
+
+                @Override
+                public Enumeration<String> keys() {
+                    return null;
+                }
+
+                @Override
+                public Enumeration<Integer> elements() {
+                    return null;
+                }
+
+                @Override
+                public Integer get(Object key) {
+                    return null;
+                }
+
+                @Override
+                public Integer put(String key, Integer value) {
+                    return null;
+                }
+
+                @Override
+                public Integer remove(Object key) {
+                    return null;
+                }
+            };
 
             //DEBUG
             /*for (String name: requestedCandyNames) {
@@ -327,23 +358,21 @@ public class Main {
 
             System.out.println("\nFINAL PRICES:");
 
+            // sum for prices
+            float sum = 0;
+
             // Get prices
             for (DistributorCandyPrice candyPrice : bestDistributorPrices) {
-                float product = candyPrice.cost *
+                // Get amount ordered respective to the candy's name
+                int amountReq = orderDict.get(candyPrice.getCandyName());
+
+                //candyListMap
+                float product = candyPrice.cost * amountReq;
                 System.out.println(candyPrice.candyName + product);
+                sum += product;
             }
 
-
-            // For each amount in requested candies:
-            for (int i : requestedCandyAmounts) {
-                System.out.print(i);
-            }
-
-
-                // Multiply best prices buy desired amount of each candy, and attach type + distributor
-                // Append string with that data
-            // return something
-            return null;
+            return sum;
         });
 
     }
