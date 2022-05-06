@@ -59,16 +59,10 @@ class DistributorCandyPrice {
 class Candy {
 /*    @Expose
     protected int SKU;*/
-
-    @Expose
-    protected String name;
+    // Note: Name is in the map
 
     @Expose
     protected int amountToOrder;
-
-    public String getName() {
-        return name;
-    }
 
     public int getAmountToOrder() {
         return amountToOrder;
@@ -99,7 +93,7 @@ class CandyToRestock {
 }
 
 public class Main {
-    public static void main(String[] args) throws IOException, InvalidFormatException {
+    public static void main(String[] args) throws IOException, InvalidFormatException, NullPointerException {
 
         // Configure log4j
         BasicConfigurator.configure();
@@ -217,32 +211,55 @@ public class Main {
 
             // Add values to these array
             for (Candy candy : candyListMap.values()) {
-                requestedCandyNames.add(candy.getName());
                 requestedCandyAmounts.add(candy.getAmountToOrder());
             }
+
+
+            //DEBUG
+            /*for (String name: requestedCandyNames) {
+                System.out.println("name test: " + name);
+            }
+
+            for (Candy candy : candyListMap.values()) {
+                System.out.println("amountToOrder test: " + candy.getAmountToOrder());
+            }*/
+
 
             // Establish some vars
             String distributorName;
             ArrayList<DistributorCandyPrice> bestDistributorPrices = new ArrayList<>();
             ArrayList<String> listNamesScanned = new ArrayList<>();
 
+            // Get all sheets from workbook
+            ArrayList<Sheet> distributorsSheets = new ArrayList<>();
+
             // Iterate over sheets in workbook
             Iterator<Sheet> sheetIterator = distributorsWorkbook.sheetIterator();
-            System.out.println("Retrieving distributor Sheets using Iterator");
+//            System.out.println("Iterating over sheets");
             while (sheetIterator.hasNext()) {
 
                 // Get the next sheet
-                Sheet currentDistributorSheet = sheetIterator.next();
+                Sheet currentSheet = sheetIterator.next();
 
-                //System.out.println("=> " + currentDistributorSheet.getSheetName());
+                System.out.println("=> " + currentSheet.getSheetName());
                 // Get name of distributor from sheet name
-                distributorName = currentDistributorSheet.getSheetName();
+                distributorName = currentSheet.getSheetName();
 
+                // Get num rows properly, do it this way to prevent null exception
+                int rows = 0;
+                if(currentSheet.getPhysicalNumberOfRows()>0) {
+                    rows = currentSheet.getLastRowNum() - currentSheet.getFirstRowNum()+1;
+                }
+//                int sheetLen = currentSheet.getPhysicalNumberOfRows() - 1;
+                System.out.println("len:" + rows);
                 // For each line in current sheet after 1st line:
-                for (int i = 1; i <= n; i++) {
+                for (int i = 1; i <= rows; i++) {
+
+                    // TODO WHEN RETURN: Fix null pointer exception that happens here
 
                     // Get rows from sheet
-                    Row row = currentDistributorSheet.getRow(i);
+                    Row row = currentSheet.getRow(i);
+                    System.out.println(row);
 
                     // Get cells from row
                     Cell candyNameCell = row.getCell(0);
@@ -289,7 +306,7 @@ public class Main {
 
             // For each amount in requested candies:
             for (int i : requestedCandyAmounts) {
-
+                System.out.print(i);
             }
                 // Multiply best prices buy desired amount of each candy, and attach type + distributor
                 // Append string with that data
