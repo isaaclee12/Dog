@@ -249,33 +249,11 @@ public class Main {
                 System.out.println("=> " + distributorName);
 
                 // test
-                System.out.println("last:" + currentSheet.getLastRowNum());
+//                System.out.println("last:" + currentSheet.getLastRowNum());
 
                 // get num rows
                 int rows = currentSheet.getPhysicalNumberOfRows() - 1;
-                System.out.println("rows by poi:" + rows);
-
-/*                // Row counter
-                int rowCount = 0;
-                int i = 0;
-                for (Row row : sheet) {
-                    boolean rowHasContent = true;
-                    for (Cell cell : row) {
-                        if (cell == null) {
-                            rowHasContent = false;
-                            break;
-                        }
-                    }
-
-                    i++;
-
-                    if (rowHasContent && distributorName.equals("Candy Corp")) {
-                        rowCount++;
-                        System.out.println("Row Count:" + rowCount + ", Row in XL:" + i);
-                        System.out.println("Cell:" + row.getCell(0));
-                    }
-                }
-            }*/
+//                System.out.println("rows by poi:" + rows);
 
                 // For each line in current sheet after 1st line:
                 for (int i = 1; i <= rows; i++) {
@@ -349,9 +327,10 @@ public class Main {
 
             System.out.println("\nFINAL PRICES:");
 
-            // Debug
+            // Get prices
             for (DistributorCandyPrice candyPrice : bestDistributorPrices) {
-                System.out.println(candyPrice);
+                float product = candyPrice.cost *
+                System.out.println(candyPrice.candyName + product);
             }
 
 
