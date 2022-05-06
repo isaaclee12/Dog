@@ -83,7 +83,7 @@ export const reOrderHandler = () => {
     restockData += "}";
 
     // console.log("data:", data[i].name);
-    console.log(restockData);
+    // console.log(restockData);
 
     // this code executes post(restock-cost) in Main.java
     let xhr = new XMLHttpRequest();
@@ -114,10 +114,10 @@ export default function Challenge() {
         console.log("failed to parse data");
     }
 
+    // Parse data from string to JSON
     data = JSON.parse(dataString);
-    console.log("JSON:", data);
-    // console.log("JSON:", testData);
 
+    // Map data from JSON to table
     const ItemRow=data.map(
         (info)=>{
             return(
@@ -140,6 +140,10 @@ export default function Challenge() {
 
     return (
     <>
+      <h1>Instructions:</h1>
+      <h3>Click "Get Low-Stock Items" to show items with stock quantities under 25% of capacity.
+          Enter the amount of each candy to order in the order amount column,
+          Then click "Determine Re-Order Cost" and the cost will appear below the table.</h3>
       <button onClick={findLowStockItemsHandler}>Get Low-Stock Items</button>
       <button onClick={reOrderHandler}>Determine Re-Order Cost</button>
 
