@@ -243,22 +243,19 @@ public class Main {
 
                 // Get name of distributor from sheet name
                 distributorsSheets.add(currentSheet);
-            }
 
-
-            for (Sheet sheet : distributorsSheets) {
                 // get distributor name
-                distributorName = sheet.getSheetName();
+                distributorName = currentSheet.getSheetName();
                 System.out.println("=> " + distributorName);
 
                 // test
-                System.out.println("last:" + sheet.getLastRowNum());
+                System.out.println("last:" + currentSheet.getLastRowNum());
 
                 // get num rows
-                int rows = sheet.getPhysicalNumberOfRows() - 1;
+                int rows = currentSheet.getPhysicalNumberOfRows() - 1;
                 System.out.println("rows by poi:" + rows);
 
-                // Row counter
+/*                // Row counter
                 int rowCount = 0;
                 int i = 0;
                 for (Row row : sheet) {
@@ -278,17 +275,16 @@ public class Main {
                         System.out.println("Cell:" + row.getCell(0));
                     }
                 }
-            }
+            }*/
 
-// BEGIN COMMENT
-/*                // For each line in current sheet after 1st line:
+                // For each line in current sheet after 1st line:
                 for (int i = 1; i <= rows; i++) {
 
                     // TODO WHEN RETURN: Fix null pointer exception that happens here
 
                     // Get rows from sheet
-                    Row row = sheet.getRow(i);
-                    System.out.println(row.toString());
+                    Row row = currentSheet.getRow(i);
+//                    System.out.println(row.toString());
 
                     // Get cells from row
                     Cell candyNameCell = row.getCell(0);
@@ -313,23 +309,49 @@ public class Main {
                         if (!listNamesScanned.contains(candyName)) {
                             listNamesScanned.add(candyName);
 
+
+                            // System.out.println("Item not in array");
+
                             // Add to array
                             bestDistributorPrices.add(newData);
                         }
                         // If already in the array, compare the two's prices
                         else {
                             // get match
-                            DistributorCandyPrice target = (DistributorCandyPrice) bestDistributorPrices.stream()
-                                    .filter(DistributorCandyPrice -> candyName.equals(DistributorCandyPrice.getCandyName()));
+                            // Debug
+//                            System.out.println("Item in array");
+//                            System.out.println(newData);
 
-                            // If the new price is lower, replace it
-                            if (cost < target.getCost()) {
-                                bestDistributorPrices.remove(target);
-                                bestDistributorPrices.add(newData);
+                            // If array bestDistributorPrices has a DistributorCandyPrice with the same name as the current DistributorCandyPrice newData object
+                            for (DistributorCandyPrice candyPrice : bestDistributorPrices) {
+                                if (candyPrice.getCandyName().equals(newData.getCandyName())) {
+
+                                    // COMPARE DEBUG
+//                                    System.out.println("\nOLD:" + candyPrice);
+//                                    System.out.println("NEW:" + newData);
+
+                                    // If the new price is lower, replace it
+                                    if (newData.cost < candyPrice.getCost()) {
+                                        bestDistributorPrices.remove(candyPrice);
+                                        bestDistributorPrices.add(newData);
+                                    }
+                                    break;
+                                }
                             }
+/*                            DistributorCandyPrice target = (DistributorCandyPrice) bestDistributorPrices.stream()
+                                    .filter(DistributorCandyPrice -> candyName.equals(DistributorCandyPrice.getCandyName()));*/
+
+
                         }
                     }
                 }
+            }
+
+            System.out.println("\nFINAL PRICES:");
+
+            // Debug
+            for (DistributorCandyPrice candyPrice : bestDistributorPrices) {
+                System.out.println(candyPrice);
             }
 
 
@@ -337,8 +359,7 @@ public class Main {
             for (int i : requestedCandyAmounts) {
                 System.out.print(i);
             }
-            */
-            // END COMMENT
+
 
                 // Multiply best prices buy desired amount of each candy, and attach type + distributor
                 // Append string with that data
