@@ -3,6 +3,7 @@ import React from "react";
 // JSON DATA OBJ
 let data = [];
 
+// Helper function for xjr get requests
 function httpGet(url) {
     let xmlHttpReq = new XMLHttpRequest();
     xmlHttpReq.open("GET", url, false);
@@ -13,19 +14,9 @@ function httpGet(url) {
 // Event handlers
 export const findLowStockItemsHandler = () => {
     document.getElementById("table").style.display = "inline";
-/*    let isVisible = (document.getElementById("table").style.display !== "none");
-
-    console.log(isVisible);
-
-    if (isVisible) {
-        document.getElementById("table").style.display = "none";
-    } else {
-        document.getElementById("table").style.display = "inline";
-    }*/
 }
 
 export const reOrderHandler = () => {
-
     // Get order amounts from inputs
     let restockInputs = document.getElementsByClassName("restock-input");
 
@@ -94,9 +85,6 @@ export const reOrderHandler = () => {
     // console.log("data:", data[i].name);
     console.log(restockData);
 
-    // set html
-    // document.getElementById("dataToSend").innerHTML = restockData;
-
     // this code executes post(restock-cost) in Main.java
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "http://localhost:4567/restock-cost");
@@ -116,7 +104,6 @@ export const reOrderHandler = () => {
 
 // Main function
 export default function Challenge() {
-    // call lowStock in Main.java
     // Get the low-stock items
     let dataString = "";
 
@@ -153,7 +140,6 @@ export default function Challenge() {
 
     return (
     <>
-      {/* TODO: Add event handlers to these buttons that use the Java API to perform their relative actions.*/}
       <button onClick={findLowStockItemsHandler}>Get Low-Stock Items</button>
       <button onClick={reOrderHandler}>Determine Re-Order Cost</button>
 
@@ -171,17 +157,11 @@ export default function Challenge() {
           </tr>
         </thead>
           {ItemRow}
-          {/* TODO: Create an <ItemRow /> component that's rendered for every inventory item. The component
-          will need an input element in the Order Amount column that will take in the order amount and
-          update the application state appropriately. */}
-          {/*<ItemRow/>*/}
       </table>
-      {/* TODO: Display total cost returned from the server */}
+      {/*Div to display table input errors*/}
       <div id="error"> </div>
       <div>Total Cost: </div>
-      {/*Invisible div for java to get data from*/}
-      <div id="dataToSend"> </div>
-      {/*Same thing but for restock*/}
+      {/*Div to display cost to restock*/}
       <div id="restockCost"> </div>
     </>
     );
