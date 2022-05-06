@@ -337,10 +337,10 @@ public class Main {
 
 
                 //candyListMap
-                float product = candyPrice.cost * amountReq;
-                System.out.println(candyPrice.candyName + product);
-                sum += product;
+                sum += candyPrice.cost * amountReq;
             }
+
+            System.out.println(sum);
 
             return sum;
         });

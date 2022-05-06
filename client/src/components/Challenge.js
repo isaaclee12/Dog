@@ -95,7 +95,7 @@ export const reOrderHandler = () => {
     console.log(restockData);
 
     // set html
-    document.getElementById("dataToSend").innerHTML = restockData;
+    // document.getElementById("dataToSend").innerHTML = restockData;
 
     // this code executes post(restock-cost) in Main.java
     let xhr = new XMLHttpRequest();
@@ -107,17 +107,18 @@ export const reOrderHandler = () => {
     xhr.onload = () => console.log(xhr.responseText);
 
     // send the data
-     xhr.send(restockData);
+    xhr.send(restockData);
 
     console.log("test");
 
     // Get data back
     // let restockCost = httpGet('http://localhost:4567/restock-cost');
     let restockCost = xhr.responseText;
-    console.log("Return:", restockCost);
+    console.log("Return:", Number(restockCost).toFixed(2));
+    let costString = "" + Number(restockCost).toFixed(2);
 
-    // Set HTML.
-    document.getElementById("restockCost").innerHTML = restockCost;
+    // Set HTML
+    document.getElementById("restockCost").innerHTML = "$" + costString;
 }
 
 
